@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+项目仿真环境：
+. Ubuntu Noble 24.04
+. ROS 2 Jazzy Jalisco
+. Gazebo Harmonic
