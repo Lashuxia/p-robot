@@ -37,11 +37,33 @@
       </link>
     </model>
 
+    <!-- 1. Include the mobile platform with the arm mounting point -->
     <include>
-      <!-- 确保这里的路径指向您修改后的模型SDF文件 -->
-      <uri>file://cart_front_steering/model.sdf</uri> 
-      <name>my_combined_robot</name>
-      <pose>0 0 0.1 0 0 0</pose> <!-- 初始放置机器人的位置，确保它在地面上 -->
+      <uri>file://cart.sdf</uri> <!-- Assuming cart.sdf is in the same directory as this world file, or provide full/relative path -->
+      <name>mobile_platform</name> <!-- Changed name for clarity -->
+      <pose>0 0 0 0 0 0</pose> <!-- Initial pose of the platform in the world -->
     </include>
+
+    <!-- 2. Include the UR30 arm model -->
+    <include>
+      <uri>file://ur30.urdf</uri> <!-- Assuming ur30.urdf is in the same directory -->
+      <name>ur30_arm</name>
+      <!-- The initial pose here is relative to the world, but it will be overridden by the joint -->
+      <!-- We can set it to be roughly where the arm_base_mount is for visual aid before joint connection if needed, but joint is king -->
+    </include>
+
+    <!-- 3. Attach the UR30 arm to the mobile platform's arm_base_mount -->
+    <joint name="platform_to_arm_joint" type="fixed">
+      <parent>mobile_platform::arm_base_mount</parent>  <!-- Link on the mobile platform -->
+      <child>ur30_arm::base_link</child>               <!-- Base link of the UR30 arm -->
+      <pose relative_to="mobile_platform::arm_base_mount">0 0 1.25 0 0 0</pose> 
+      <!-- This pose is relative to the parent link (arm_base_mount). -->
+      <!-- If arm_base_mount's origin is where you want the UR30 base_link's origin to be, then 0 0 0 0 0 0 is correct. -->
+      <!-- You might need a small Z offset if the ur30 base_link origin is not exactly at its mounting surface. -->
+      <!-- For example, if ur30.urdf's base_link origin is at its very bottom, and arm_base_mount is a plate of 0.025m height, -->
+      <!-- and you want the arm to sit ON TOP of the plate, the Z offset in this joint pose might be 0.0125 (half height of arm_base_mount visual) -->
+      <!-- Or, more simply, ensure arm_base_mount link's origin IS the mounting surface center. -->
+    </joint>
+
   </world>
 </sdf>
